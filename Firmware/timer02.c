@@ -7,7 +7,13 @@
 #include "Arduino.h"
 #include "io_atmega2560.h"
 
-#define BEEPER              84
+/*RAMPS*/
+//#define BEEPER              84
+#if MOTHERBOARD == BOARD_RAMPS_14_EFB
+	#define BEEPER              33
+#else
+	#define BEEPER              84
+#endif
 
 uint8_t timer02_pwm0 = 0;
 

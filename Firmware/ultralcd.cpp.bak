@@ -1826,15 +1826,7 @@ void lcd_commands()
 
 static float count_e(float layer_heigth, float extrusion_width, float extrusion_length) {
 	//returns filament length in mm which needs to be extrude to form line with extrusion_length * extrusion_width * layer heigth dimensions
-	/*RAMPS*/
-	//float extr = extrusion_length * layer_heigth * extrusion_width / (M_PI * pow(1.75, 2) / 4);
-	#ifdef FILAMENT_3MM
-		float extr = extrusion_length * layer_heigth * extrusion_width / (M_PI * pow(2.85, 2) / 4);
-	#else
-		float extr = extrusion_length * layer_heigth * extrusion_width / (M_PI * pow(1.75, 2) / 4);
-	#endif //FILAMENT_3MM
-	/*RAMPS*/
-	
+	float extr = extrusion_length * layer_heigth * extrusion_width / (M_PI * pow(1.75, 2) / 4);
 	return extr;
 }
 
