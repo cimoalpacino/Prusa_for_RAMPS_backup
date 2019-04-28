@@ -157,7 +157,10 @@ void tmc2130_init()
 	SET_INPUT(X_TMC2130_DIAG);
 	SET_INPUT(Y_TMC2130_DIAG);
 	SET_INPUT(Z_TMC2130_DIAG);
-	SET_INPUT(E0_TMC2130_DIAG);
+	/*RAMPS*/
+	if (E0_TMC2130_DIAG != -1) {
+		SET_INPUT(E0_TMC2130_DIAG);
+	}
 	for (int axis = 0; axis < 2; axis++) // X Y axes
 	{
 		tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);

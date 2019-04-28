@@ -542,7 +542,7 @@ int8_t xyzcal_find_point_center2(uint16_t delay_us)
 	int16_t dx1 = x0 - _X;
 	if (dx1 >= MAX_DIAMETR)
 	{
-		printf_P(PSTR("!!! dx1 = %d\n"), dx1);
+		printf_P(PSTR("! dx1 = %d\n"), dx1);
 		return 0;
 	}
 	xyzcal_lineXYZ_to(x0, y0, z0, delay_us, 0);
@@ -550,7 +550,7 @@ int8_t xyzcal_find_point_center2(uint16_t delay_us)
 	int16_t dx2 = _X - x0;
 	if (dx2 >= MAX_DIAMETR)
 	{
-		printf_P(PSTR("!!! dx2 = %d\n"), dx2);
+		printf_P(PSTR("! dx2 = %d\n"), dx2);
 		return 0;
 	}
 	xyzcal_lineXYZ_to(x0, y0, z0, delay_us, 0);
@@ -558,7 +558,7 @@ int8_t xyzcal_find_point_center2(uint16_t delay_us)
 	int16_t dy1 = y0 - _Y;
 	if (dy1 >= MAX_DIAMETR)
 	{
-		printf_P(PSTR("!!! dy1 = %d\n"), dy1);
+		printf_P(PSTR("! dy1 = %d\n"), dy1);
 		return 0;
 	}
 	xyzcal_lineXYZ_to(x0, y0, z0, delay_us, 0);
@@ -566,7 +566,7 @@ int8_t xyzcal_find_point_center2(uint16_t delay_us)
 	int16_t dy2 = _Y - y0;
 	if (dy2 >= MAX_DIAMETR)
 	{
-		printf_P(PSTR("!!! dy2 = %d\n"), dy2);
+		printf_P(PSTR("! dy2 = %d\n"), dy2);
 		return 0;
 	}
 	printf_P(PSTR("dx1=%d\n"), dx1);
@@ -695,6 +695,12 @@ const int16_t xyzcal_point_ycoords[4] PROGMEM = {600, 600, 19800, 19800};
 const int16_t xyzcal_point_xcoords[4] PROGMEM = {1200, 22000, 22000, 1200};
 const int16_t xyzcal_point_ycoords[4] PROGMEM = {700, 700, 19800, 19800};
 #endif //((MOTHERBOARD == BOARD_RAMBO_MINI_1_0) || (MOTHERBOARD == BOARD_RAMBO_MINI_1_3))
+
+/*RAMPS*/
+#if MOTHERBOARD == BOARD_RAMPS_14_EFB
+const int16_t xyzcal_point_xcoords[4] PROGMEM = { 1150, 21450, 21450, 1150 };
+const int16_t xyzcal_point_ycoords[4] PROGMEM = { 600, 600, 19750, 19750 }; 
+#endif //!MOTHERBOARD == BOARD_RAMPS_14_EFB
 
 const uint16_t xyzcal_point_pattern[12] PROGMEM = {0x000, 0x0f0, 0x1f8, 0x3fc, 0x7fe, 0x7fe, 0x7fe, 0x7fe, 0x3fc, 0x1f8, 0x0f0, 0x000};
 
