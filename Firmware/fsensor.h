@@ -45,7 +45,12 @@ extern void fsensor_setup_interrupt(void);
 extern void fsensor_autoload_check_start(void);
 extern void fsensor_autoload_check_stop(void);
 #endif //PAT9125
+/*RAMPS*/
 extern bool fsensor_check_autoload(void);
+//#ifdef IR_SENSOR
+//extern bool fsensor_check_autoload(void);
+//#endif //IR_SENSOR
+/*RAMPS*/
 //! @}
 
 //! @name optical quality measurement support

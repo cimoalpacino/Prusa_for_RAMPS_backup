@@ -482,12 +482,27 @@ void force_high_power_mode(bool start_high_power_section);
 #endif //TMC2130
 
 // G-codes
+/*RAMPS*/
+//#if MOTHERBOARD == BOARD_RAMPS_14_EFB
+//void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, long home_y_value, bool home_z_axis, long home_z_value, bool calib, bool without_mbl);
+//void gcode_G28(bool home_x_axis, bool home_y_axis, bool home_z_axis);
+//#endif // MOTHERBOARD == BOARDS_RAMPS_14_EFB
 
 bool gcode_M45(bool onlyZ, int8_t verbosity_level);
 void gcode_M114();
 void gcode_M701();
 
-#define UVLO !(PINE & (1<<4))
+/*RAMPS*/
+#ifdef UVLO_ENABLE
+if (MOTHERBOARD == BOARD_RAMPS_14_EFB) 
+	{
+		#define UVLO !(PINE & (1<<4)) // Power panic - pin ZMAX on RAMPS
+	}
+	else
+	{
+		#define UVLO !(PINE & (1<<4))
+	}	
+#endif
 
 void proc_commands();
 

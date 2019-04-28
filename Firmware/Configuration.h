@@ -11,8 +11,8 @@
 #define FW_COMMIT_NR   2201
 // FW_VERSION_UNKNOWN means this is an unofficial build.
 // The firmware should only be checked into github with this symbol.
-#define FW_DEV_VERSION FW_VERSION_UNKNOWN
-#define FW_REPOSITORY "Unknown"
+#define FW_DEV_VERSION FW_VERSION_GOLD //FW_VERSION_UNKNOWN
+#define FW_REPOSITORY "cimoalpacino" /*RAMPS*/
 #define FW_VERSION_FULL FW_VERSION "-" STR(FW_COMMIT_NR)
 
 // Debug version has debugging enabled (the symbol DEBUG_BUILD is set).
@@ -436,10 +436,12 @@ your extruder heater takes 2 minutes to hit the target on heating.
 // M501 - reads parameters from EEPROM (if you need reset them after you changed them temporarily).
 // M502 - reverts to the default "factory settings".  You still need to store them in EEPROM afterwards if you want to.
 //define this to enable EEPROM support
-//#define EEPROM_SETTINGS
+/*RAMPS*/
+#define EEPROM_SETTINGS
 //to disable EEPROM Serial responses and decrease program space by ~1700 byte: comment this out:
 // please keep turned on if you can.
-//#define EEPROM_CHITCHAT
+#define EEPROM_CHITCHAT
+/*RAMPS*/
 
 // Host Keepalive
 //
@@ -460,7 +462,8 @@ your extruder heater takes 2 minutes to hit the target on heating.
 
 // The RepRapDiscount Smart Controller (white PCB)
 // http://reprap.org/wiki/RepRapDiscount_Smart_Controller
-#define REPRAP_DISCOUNT_SMART_CONTROLLER
+/*RAMPS*/
+//#define REPRAP_DISCOUNT_SMART_CONTROLLER
 #define SDSUPPORT
 #define LCD_WIDTH 20
 #define LCD_HEIGHT 4
@@ -477,8 +480,10 @@ your extruder heater takes 2 minutes to hit the target on heating.
 // Use software PWM to drive the fan, as for the heaters. This uses a very low frequency
 // which is not ass annoying as with the hardware PWM. On the other hand, if this frequency
 // is too low, you should also increment SOFT_PWM_SCALE.
-#define FAN_SOFT_PWM
-#define FAN_SOFT_PWM_BITS 4 //PWM bit resolution = 4bits, freq = 62.5Hz
+/*RAMPS*/ //disable if necessary!
+//#define FAN_SOFT_PWM
+//#define FAN_SOFT_PWM_BITS 4 //PWM bit resolution = 4bits, freq = 62.5Hz
+/*RAMPS*/
 
 // Incrementing this by 1 will double the software PWM frequency,
 // affecting heaters, and the fan if FAN_SOFT_PWM is enabled.
@@ -510,7 +515,8 @@ your extruder heater takes 2 minutes to hit the target on heating.
 //
 //#define NUM_SERVOS 3 // Servo index starts with 0 for M280 command
 
-#define DEFAULT_NOMINAL_FILAMENT_DIA  1.75  //Enter the diameter (in mm) of the filament generally used (3.0 mm or 1.75 mm). Used by the volumetric extrusion.
+/*RAMPS*/
+//#define DEFAULT_NOMINAL_FILAMENT_DIA  1.75  //Enter the diameter (in mm) of the filament generally used (3.0 mm or 1.75 mm). Used by the volumetric extrusion.
 
 // Calibration status of the machine, to be stored into the EEPROM,
 // (unsigned char*)EEPROM_CALIBRATION_STATUS

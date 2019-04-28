@@ -401,8 +401,15 @@ static void get_arc_coordinates();
 static bool setTargetedHotend(int code, uint8_t &extruder);
 static void print_time_remaining_init();
 static void wait_for_heater(long codenum, uint8_t extruder);
+/*RAMPS*/
 static void gcode_G28(bool home_x_axis, bool home_y_axis, bool home_z_axis);
-
+/*
+#if (MOTHERBOARD == BOARD_RAMPS_14_EFB)
+void gcode_G28(bool home_x_axis, bool home_y_axis, bool home_z_axis);
+#else
+static void gcode_G28(bool home_x_axis, bool home_y_axis, bool home_z_axis);
+#endif
+*/
 uint16_t gcode_in_progress = 0;
 uint16_t mcode_in_progress = 0;
 
@@ -503,8 +510,14 @@ void servo_init()
   #endif
 }
 
-
-bool fans_check_enabled = true;
+/*RAMPS*/
+//bool fans_check_enabled = true;
+#if defined(FANCHECK)
+	bool fans_check_enabled = true;
+#else
+	bool fans_check_enabled = false;
+#endif
+/**/
 
 #ifdef TMC2130
 
@@ -851,9 +864,9 @@ void show_fw_version_warnings() {
     lcd_update_enable(false);
     lcd_clear();
   #if FW_DEV_VERSION == FW_VERSION_DEVEL
-    lcd_puts_at_P(0, 0, PSTR("Development build !!"));
+    lcd_puts_at_P(0, 0, PSTR("Development build !"));
   #else
-    lcd_puts_at_P(0, 0, PSTR("Debbugging build !!!"));
+    lcd_puts_at_P(0, 0, PSTR("Debbugging build !"));
   #endif
     lcd_puts_at_P(0, 1, PSTR("May destroy printer!"));
     lcd_puts_at_P(0, 2, PSTR("ver ")); lcd_puts_P(PSTR(FW_VERSION_FULL));
@@ -977,47 +990,42 @@ void list_sec_lang_from_external_flash()
 #endif //(LANG_MODE != 0)
 
 
-static void w25x20cl_err_msg()
-{
-    lcd_puts_P(_n(ESC_2J ESC_H(0,0) "External SPI flash" ESC_H(0,1) "W25X20CL is not res-"
-            ESC_H(0,2) "ponding. Language" ESC_H(0,3) "switch unavailable."));
-}
-
 // "Setup" function is called by the Arduino framework on startup.
 // Before startup, the Timers-functions (PWM)/Analog RW and HardwareSerial provided by the Arduino-code 
 // are initialized by the main() routine provided by the Arduino framework.
 void setup()
 {
+	/*RAMPS*/ 
+	#if MOTHERBOARD != BOARD_RAMPS_14_EFB
 	mmu_init();
-	
+	#endif
 	ultralcd_init();
 
 #if (LCD_BL_PIN != -1) && defined (LCD_BL_PIN)
 	analogWrite(LCD_BL_PIN, 255); //set full brightnes
 #endif //(LCD_BL_PIN != -1) && defined (LCD_BL_PIN)
 
+	/*RAMPS*/ 
+	#if MOTHERBOARD != BOARD_RAMPS_14_EFB
 	spi_init();
+	#endif
 
 	lcd_splash();
-    Sound_Init();                                // also guarantee "SET_OUTPUT(BEEPER)"
+     Sound_Init();                                // also guarantee "SET_OUTPUT(BEEPER)"
 
 #ifdef W25X20CL
-    bool w25x20cl_success = w25x20cl_init();
-	if (w25x20cl_success)
-	{
-	    optiboot_w25x20cl_enter();
-#if (LANG_MODE != 0) //secondary language support
-        update_sec_lang_from_external_flash();
-#endif //(LANG_MODE != 0)
-	}
-	else
-	{
-	    w25x20cl_err_msg();
-	}
-#else
-	const bool w25x20cl_success = true;
-#endif //W25X20CL
+	if (!w25x20cl_init())
+		kill(_i("External SPI flash W25X20CL not responding."));
+	// Enter an STK500 compatible Optiboot boot loader waiting for flashing the languages to an external flash memory.
+	optiboot_w25x20cl_enter();
+#endif
 
+#if (LANG_MODE != 0) //secondary language support
+#ifdef W25X20CL
+	if (w25x20cl_init())
+		update_sec_lang_from_external_flash();
+#endif //W25X20CL
+#endif //(LANG_MODE != 0)
 
 	setup_killpin();
 	setup_powerhold();
@@ -1223,17 +1231,12 @@ void setup()
 
 	tp_init();    // Initialize temperature loop
 
-	if (w25x20cl_success) lcd_splash(); // we need to do this again, because tp_init() kills lcd
-	else
-	{
-	    w25x20cl_err_msg();
-	    printf_P(_n("W25X20CL not responding.\n"));
-	}
+	lcd_splash(); // we need to do this again, because tp_init() kills lcd
 
 	plan_init();  // Initialize planner;
 
 	factory_reset();
-    lcd_encoder_diff=0;
+     lcd_encoder_diff=0;
 
 #ifdef TMC2130
 	uint8_t silentMode = eeprom_read_byte((uint8_t*)EEPROM_SILENT);
@@ -2460,7 +2463,14 @@ void force_high_power_mode(bool start_high_power_section) {
 #ifdef TMC2130
 static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, long home_y_value, bool home_z_axis, long home_z_value, bool calib, bool without_mbl)
 #else
+/*RAMPS*/
 static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, long home_y_value, bool home_z_axis, long home_z_value, bool without_mbl)
+/*	#if (MOTHERBOARD == BOARD_RAMPS_14_EFB)
+		void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, long home_y_value, bool home_z_axis, long home_z_value, bool without_mbl)
+	#else
+		static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, long home_y_value, bool home_z_axis, long home_z_value, bool without_mbl)
+	#endif //(MOTHERBOARD == BOARD_RAMPS_14_EFB)
+	*/
 #endif //TMC2130
 {
 	st_synchronize();
@@ -2747,7 +2757,16 @@ static void gcode_G28(bool home_x_axis, long home_x_value, bool home_y_axis, lon
 #endif
 }
 
+/*RAMPS*/
 static void gcode_G28(bool home_x_axis, bool home_y_axis, bool home_z_axis)
+/*
+#if (MOTHERBOARD == BOARD_RAMPS_14_EFB)
+	void gcode_G28(bool home_x_axis, bool home_y_axis, bool home_z_axis)
+#else
+	static void gcode_G28(bool home_x_axis, bool home_y_axis, bool home_z_axis)
+#endif
+*/
+//
 {
 #ifdef TMC2130
     gcode_G28(home_x_axis, 0, home_y_axis, 0, home_z_axis, 0, false, true);
