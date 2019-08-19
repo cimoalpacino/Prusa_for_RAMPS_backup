@@ -3558,8 +3558,10 @@ void process_commands()
             // careful!
             if (farm_mode) {
 #ifdef WATCHDOG
+				#ifdef W25X20CL
                 boot_app_magic = BOOT_APP_MAGIC;
                 boot_app_flags = BOOT_APP_FLG_RUN;
+				#endif
 				wdt_enable(WDTO_15MS);
 				cli();
 				while(1);

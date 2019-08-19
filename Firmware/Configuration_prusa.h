@@ -67,6 +67,10 @@
 	// Power panic feature
 	//#define UVLO_ENABLE  
 
+
+	// Watchdog support
+	//#define WATCHDOG
+
 	// TMC2130 drivers
 	//#define TMC2130	
 	#ifdef TMC2130
@@ -95,6 +99,10 @@
 	// Fan check
 	#define FANCHECK
 
+
+	// Watchdog support
+	#define WATCHDOG
+
 	// Filament sensor
 	#define FILAMENT_SENSOR
 	#define PAT9125
@@ -120,15 +128,21 @@
 //XYZ calibration may fail if using different settings!
 #define STEPS100  
 
+#ifndef STEPS100
+	#define CUSTOM_X_STEPS 80 //define X steps
+	#define CUSTOM_Y_STEPS 80 //define Y steps
+#endif
 // Steps per unit {X,Y,Z,E}
 #if MOTHERBOARD == BOARD_RAMPS_14_EFB
-	#ifdef STEPS100
+	#if defined(STEPS100) && defined(FILAMENT_3MM)
 		#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,143} //2.85mm
+	#elif defined(FILAMENT_3MM)
+		#define DEFAULT_AXIS_STEPS_PER_UNIT   {CUSTOM_X_STEPS,CUSTOM_Y_STEPS,3200/8,143} //2.85mm
 	#else
-		#define DEFAULT_AXIS_STEPS_PER_UNIT   {80,80,3200/8,143} //2.85mm
+		#define DEFAULT_AXIS_STEPS_PER_UNIT   {CUSTOM_X_STEPS,CUSTOM_Y_STEPS,3200/8,133} //1.75mm
 	#endif // STEPS100
 #else
-	#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,133} //1.75mm
+	#define DEFAULT_AXIS_STEPS_PER_UNIT   {100,100,3200/8,133} //1.75mm - Original Prusa
 #endif
 
 // Endstop inverting
