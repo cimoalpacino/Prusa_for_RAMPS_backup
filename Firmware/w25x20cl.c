@@ -184,4 +184,4 @@ void w25x20cl_wait_busy(void)
 {
 	while (w25x20cl_rd_status_reg() & W25X20CL_STATUS_BUSY) ;
 }
-#endif // W25X20CL
+#endif // W25X20CL /*RAMPS*/

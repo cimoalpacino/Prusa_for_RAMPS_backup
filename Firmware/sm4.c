@@ -37,10 +37,10 @@
 
 #if (MOTHERBOARD == BOARD_RAMPS_14_EFB)
 	//direction signal - RAMPS
-	//#define X_DIR_PIN    96 //A1  = PF1	0 (-)
-	//#define Y_DIR_PIN    90 //A7  = PF7	0 (-)
-	//#define Z_DIR_PIN    36 //D48 = PL1	0 (-)
-	//#define E0_DIR_PIN   72 //D28 = PA6	1 (+)
+	//#define X_DIR_PIN    96 //A1  = PF1	0 (-) #define INVERT_X_DIR 0
+	//#define Y_DIR_PIN    90 //A7  = PF7	0 (-) #define INVERT_Y_DIR 0
+	//#define Z_DIR_PIN    36 //D48 = PL1	0 (-) #define INVERT_Z_DIR 0
+	//#define E0_DIR_PIN   72 //D28 = PA6	1 (+) #define INVERT_E_DIR 1
 
 	//step signal pinout - RAMPS (Configuration_adv.h)
 	//#define X_STEP_PIN   97 //A0  = PF0	0 (-)
@@ -48,6 +48,13 @@
 	//#define Z_STEP_PIN   38 //D46 = PL3	0 (-)
 	//#define E0_STEP_PIN  74 //D26 = PA4	0 (-)
 #endif
+/*RAMPS*/
+#define X_DIR INVERT_X_DIR:!INVERT_X_DIR
+#define Y_DIR INVERT_Y_DIR:!INVERT_Y_DIR
+#define Z_DIR INVERT_Z_DIR:!INVERT_Z_DIR
+#define E_DIR INVERT_E0_DIR:!INVERT_E0_DIR
+uint8_t dir_mask = 0x0F^(INVERT_X_DIR | (INVERT_Y_DIR << 1) | (INVERT_Z_DIR << 2) | (INVERT_E0_DIR << 3));
+/*RAMPS*/
 
 sm4_stop_cb_t sm4_stop_cb = 0;
 
@@ -74,10 +81,10 @@ uint8_t sm4_get_dir(uint8_t axis)
 	case 3: return (PORTL & 64)?0:1;
 /*RAMPS*/
 #elif (MOTHERBOARD == BOARD_RAMPS_14_EFB)
-	case 0: return (PORTF & 2) ? 0 : 1;		//1 -
-	case 1: return (PORTF & 128) ? 0 : 1;	//7 -
-	case 2: return (PORTL & 2) ? 0 : 1;		//1 -
-	case 3: return (PORTA & 64) ? 1 : 0;	//6 +
+	case 0: return (PORTF & 2)  ?X_DIR; //0 : 1;	//1 -
+	case 1: return (PORTF & 128)?Y_DIR; //0 : 1;	//7 -
+	case 2: return (PORTL & 2)  ?Z_DIR; //0 : 1;	//1 -
+	case 3: return (PORTA & 64) ?E_DIR; //1 : 0;	//6 +
 #endif
 	}
 	return 0;
@@ -99,10 +106,10 @@ void sm4_set_dir(uint8_t axis, uint8_t dir)
 	case 3: if (!dir) PORTL |= 64; else PORTL &= ~64; break;
 /*RAMPS*/
 #elif (MOTHERBOARD == BOARD_RAMPS_14_EFB)
-	case 0: if (!dir) PORTF |= 2; else PORTF &= ~2; break;		//1 -
-	case 1: if (!dir) PORTF |= 128; else PORTF &= ~128; break;  //7 -
-	case 2: if (!dir) PORTL |= 2; else PORTL &= ~2; break;		//1 -
-	case 3: if (dir) PORTA |= 64; else PORTA &= ~64; break;		//6 +
+	case 0: if (/*!dir)*/dir == INVERT_X_DIR) PORTF |= 2; else PORTF &= ~2; break;		//1 -
+	case 1: if (/*!dir)*/dir == INVERT_Y_DIR) PORTF |= 128; else PORTF &= ~128; break;  //7 -
+	case 2: if (/*!dir)*/dir == INVERT_Z_DIR) PORTL |= 2; else PORTL &= ~2; break;		//1 -
+	case 3: if (dir == INVERT_E0_DIR) PORTA |= 64; else PORTA &= ~64; break;		//6 +
 #endif
 	}
 	asm("nop");
@@ -118,13 +125,13 @@ uint8_t sm4_get_dir_bits(void)
 	if (portL & 1) dir_bits |= 2;
 	if (portL & 4) dir_bits |= 4;
 	if (portL & 64) dir_bits |= 8;
-	dir_bits ^= 0x07; //invert XYZ, do not invert E
+	dir_bits ^= dir_mask; //0x07; //invert XYZ, do not invert E
 #elif ((MOTHERBOARD == BOARD_EINSY_1_0a))
 	if (portL & 1) dir_bits |= 1;
 	if (portL & 2) dir_bits |= 2;
 	if (portL & 4) dir_bits |= 4;
 	if (portL & 64) dir_bits |= 8;
-	dir_bits ^= 0x0a; //invert YE, do not invert XZ
+	dir_bits ^= dir_mask; //0x0a; //invert YE, do not invert XZ
 /*RAMPS*/
 #elif ((MOTHERBOARD == BOARD_RAMPS_14_EFB))
 	register uint8_t portF = PORTF;
@@ -134,7 +141,7 @@ uint8_t sm4_get_dir_bits(void)
 	if (portF & 128) dir_bits |= 2;	//7 -
 	if (portL & 2) dir_bits |= 4;	//1 -
 	if (portA & 64) dir_bits |= 8;	//6 +
-	dir_bits ^= 0x07; //invert XYZ, do not invert E
+	dir_bits ^= dir_mask; //0x07; //invert XYZ, do not invert E
 #endif
 	return dir_bits;
 }
@@ -145,13 +152,13 @@ void sm4_set_dir_bits(uint8_t dir_bits)
 	portL &= 0xb8; //set direction bits to zero
 	//TODO -optimize in asm
 #if ((MOTHERBOARD == BOARD_RAMBO_MINI_1_0) || (MOTHERBOARD == BOARD_RAMBO_MINI_1_3))
-	dir_bits ^= 0x07; //invert XYZ, do not invert E
+	dir_bits ^= dir_mask; //0x07; //invert XYZ, do not invert E
 	if (dir_bits & 1) portL |= 2;  //set X direction bit
 	if (dir_bits & 2) portL |= 1;  //set Y direction bit
 	if (dir_bits & 4) portL |= 4;  //set Z direction bit
 	if (dir_bits & 8) portL |= 64; //set E direction bit
 #elif ((MOTHERBOARD == BOARD_EINSY_1_0a))
-	dir_bits ^= 0x0a; //invert YE, do not invert XZ
+	dir_bits ^= dir_mask; //0x0a; //invert YE, do not invert XZ
 	if (dir_bits & 1) portL |= 1;  //set X direction bit
 	if (dir_bits & 2) portL |= 2;  //set Y direction bit
 	if (dir_bits & 4) portL |= 4;  //set Z direction bit
@@ -161,7 +168,7 @@ void sm4_set_dir_bits(uint8_t dir_bits)
 	register uint8_t portF = PORTF;
 	register uint8_t portA = PORTA;
 
-	dir_bits ^= 0x07; //invert XYZ, do not invert E
+	dir_bits ^= dir_mask; //0x07; //invert XYZ, do not invert E
 	portF &= 0x7d; //set direction bits to zero
 	portL &= 0xfd; //set direction bits to zero
 	portA &= 0xbf; //set direction bits to zero
@@ -226,6 +233,13 @@ void sm4_do_step(uint8_t axes_mask)
 
 uint16_t sm4_line_xyze_ui(uint16_t dx, uint16_t dy, uint16_t dz, uint16_t de)
 {
+/*RAMPS*/
+//let's adjust dx and dy for custom steps
+#ifndef STEPS100  
+  dx = dx * CUSTOM_X_STEPS / 100;
+  dy = dy * CUSTOM_Y_STEPS / 100;
+#endif
+/*RAMPS*/
 	uint16_t dd = (uint16_t)(sqrt((float)(((uint32_t)dx)*dx + ((uint32_t)dy*dy) + ((uint32_t)dz*dz) + ((uint32_t)de*de))) + 0.5);
 	uint16_t nd = dd;
 	uint16_t cx = dd;

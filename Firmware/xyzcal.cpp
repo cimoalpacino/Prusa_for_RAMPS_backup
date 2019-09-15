@@ -700,6 +700,8 @@ const int16_t xyzcal_point_ycoords[4] PROGMEM = {700, 700, 19800, 19800};
 #if MOTHERBOARD == BOARD_RAMPS_14_EFB
 const int16_t xyzcal_point_xcoords[4] PROGMEM = { 1150, 21450, 21450, 1150 };
 const int16_t xyzcal_point_ycoords[4] PROGMEM = { 600, 600, 19750, 19750 }; 
+//const int16_t xyzcal_point_xcoords[4] PROGMEM = { bed_ref_points_4[0], bed_ref_points_4[2], bed_ref_points_4[4], bed_ref_points_4[6]};
+//const int16_t xyzcal_point_ycoords[4] PROGMEM = { bed_ref_points_4[1], bed_ref_points_4[3], bed_ref_points_4[5], bed_ref_points_4[6]}; 
 #endif //!MOTHERBOARD == BOARD_RAMPS_14_EFB
 
 const uint16_t xyzcal_point_pattern[12] PROGMEM = {0x000, 0x0f0, 0x1f8, 0x3fc, 0x7fe, 0x7fe, 0x7fe, 0x7fe, 0x3fc, 0x1f8, 0x0f0, 0x000};
@@ -754,7 +756,9 @@ bool xyzcal_scan_and_process(void)
 	for (uint8_t i = 0; i < 12; i++)
 	{
 		pattern[i] = pgm_read_word((uint16_t*)(xyzcal_point_pattern + i));
-//		DBG(_n(" pattern[%d]=%d\n"), i, pattern[i]);
+		/*RAMPS*/
+		//DBG(_n(" pattern[%d]=%d\n"), i, pattern[i]);
+		/*RAMPS*/
 	}
 	uint8_t c = 0;
 	uint8_t r = 0;

@@ -16,7 +16,7 @@
 #define W25X20CL_STATUS_SRP    0x80
 
 #define W25X20CL_SPI_ENTER() spi_setup(W25X20CL_SPCR, W25X20CL_SPSR)
-#endif
+#endif /*RAMPS*/
 
 #if defined(__cplusplus)
 extern "C" {

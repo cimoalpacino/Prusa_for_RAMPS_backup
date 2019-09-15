@@ -142,8 +142,11 @@ uint16_t __tcoolthrs(uint8_t axis)
 	}
 	return 0;
 }
-
+#ifdef PSU_Delta
+void tmc2130_init(bool bSupressFlag)
+#else
 void tmc2130_init()
+#endif
 {
 //	DBG(_n("tmc2130_init(), mode=%S\n"), tmc2130_mode?_n("STEALTH"):_n("NORMAL"));
 	WRITE(X_TMC2130_CS, HIGH);
@@ -157,11 +160,8 @@ void tmc2130_init()
 	SET_INPUT(X_TMC2130_DIAG);
 	SET_INPUT(Y_TMC2130_DIAG);
 	SET_INPUT(Z_TMC2130_DIAG);
-	/*RAMPS*/
-	if (E0_TMC2130_DIAG != -1) {
-		SET_INPUT(E0_TMC2130_DIAG);
-	}
-	for (int axis = 0; axis < 2; axis++) // X Y axes
+	SET_INPUT(E0_TMC2130_DIAG);
+	for (uint_least8_t axis = 0; axis < 2; axis++) // X Y axes
 	{
 		tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
 		tmc2130_wr(axis, TMC2130_REG_TPOWERDOWN, 0x00000000);
@@ -172,7 +172,7 @@ void tmc2130_init()
 		tmc2130_wr_TPWMTHRS(axis, TMC2130_TPWMTHRS);
 		//tmc2130_wr_THIGH(axis, TMC2130_THIGH);
 	}
-	for (int axis = 2; axis < 3; axis++) // Z axis
+	for (uint_least8_t axis = 2; axis < 3; axis++) // Z axis
 	{
 		tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
 		tmc2130_wr(axis, TMC2130_REG_TPOWERDOWN, 0x00000000);
@@ -186,7 +186,7 @@ void tmc2130_init()
 		tmc2130_wr_TPWMTHRS(axis, TMC2130_TPWMTHRS);
 #endif //TMC2130_STEALTH_Z
 	}
-	for (int axis = 3; axis < 4; axis++) // E axis
+	for (uint_least8_t axis = 3; axis < 4; axis++) // E axis
 	{
 		tmc2130_setup_chopper(axis, tmc2130_mres[axis], tmc2130_current_h[axis], tmc2130_current_r[axis]);
 		tmc2130_wr(axis, TMC2130_REG_TPOWERDOWN, 0x00000000);
@@ -218,6 +218,11 @@ void tmc2130_init()
 #endif //TMC2130_LINEARITY_CORRECTION_XYZ
 	tmc2130_set_wave(E_AXIS, 247, tmc2130_wave_fac[E_AXIS]);
 #endif //TMC2130_LINEARITY_CORRECTION
+
+#ifdef PSU_Delta
+     if(!bSupressFlag)
+          check_force_z();
+#endif // PSU_Delta
 
 }
 
@@ -386,7 +391,7 @@ void tmc2130_check_overtemp()
 	static uint32_t checktime = 0;
 	if (_millis() - checktime > 1000 )
 	{
-		for (int i = 0; i < 4; i++)
+		for (uint_least8_t i = 0; i < 4; i++)
 		{
 			uint32_t drv_status = 0;
 			skip_debug_msg = true;
@@ -395,7 +400,7 @@ void tmc2130_check_overtemp()
 			{ // BIT 26 - over temp prewarning ~120C (+-20C)
 				SERIAL_ERRORRPGM(MSG_TMC_OVERTEMP);
 				SERIAL_ECHOLN(i);
-				for (int j = 0; j < 4; j++)
+				for (uint_least8_t j = 0; j < 4; j++)
 					tmc2130_wr(j, TMC2130_REG_CHOPCONF, 0x00010000);
 				kill(MSG_TMC_OVERTEMP);
 			}
@@ -840,7 +845,7 @@ void tmc2130_get_wave(uint8_t axis, uint8_t* data, FILE* stream)
 			if (mscnt == i)
 				fprintf_P(stream, PSTR("%d\t%d\n"), i, curA);
 			else //TODO - remove this check
-				fprintf_P(stream, PSTR("!! (i=%d MSCNT=%d)\n"), i, mscnt);
+				fprintf_P(stream, PSTR("! (i=%d MSCNT=%d)\n"), i, mscnt);
 		}
 		if (data) *(data++) = curA;
 		tmc2130_do_step(axis);
