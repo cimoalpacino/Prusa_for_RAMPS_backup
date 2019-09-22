@@ -542,7 +542,7 @@ int8_t xyzcal_find_point_center2(uint16_t delay_us)
 	int16_t dx1 = x0 - _X;
 	if (dx1 >= MAX_DIAMETR)
 	{
-		printf_P(PSTR("! dx1 = %d\n"), dx1);
+		printf_P(PSTR("! dx1 = %d\n"), dx1); //!!!
 		return 0;
 	}
 	xyzcal_lineXYZ_to(x0, y0, z0, delay_us, 0);
@@ -550,7 +550,7 @@ int8_t xyzcal_find_point_center2(uint16_t delay_us)
 	int16_t dx2 = _X - x0;
 	if (dx2 >= MAX_DIAMETR)
 	{
-		printf_P(PSTR("! dx2 = %d\n"), dx2);
+		printf_P(PSTR("! dx2 = %d\n"), dx2); //!!!
 		return 0;
 	}
 	xyzcal_lineXYZ_to(x0, y0, z0, delay_us, 0);
@@ -558,7 +558,7 @@ int8_t xyzcal_find_point_center2(uint16_t delay_us)
 	int16_t dy1 = y0 - _Y;
 	if (dy1 >= MAX_DIAMETR)
 	{
-		printf_P(PSTR("! dy1 = %d\n"), dy1);
+		printf_P(PSTR("! dy1 = %d\n"), dy1); //!!!
 		return 0;
 	}
 	xyzcal_lineXYZ_to(x0, y0, z0, delay_us, 0);
@@ -566,7 +566,7 @@ int8_t xyzcal_find_point_center2(uint16_t delay_us)
 	int16_t dy2 = _Y - y0;
 	if (dy2 >= MAX_DIAMETR)
 	{
-		printf_P(PSTR("! dy2 = %d\n"), dy2);
+		printf_P(PSTR("! dy2 = %d\n"), dy2); //!!!
 		return 0;
 	}
 	printf_P(PSTR("dx1=%d\n"), dx1);
@@ -756,9 +756,7 @@ bool xyzcal_scan_and_process(void)
 	for (uint8_t i = 0; i < 12; i++)
 	{
 		pattern[i] = pgm_read_word((uint16_t*)(xyzcal_point_pattern + i));
-		/*RAMPS*/
-		//DBG(_n(" pattern[%d]=%d\n"), i, pattern[i]);
-		/*RAMPS*/
+//		DBG(_n(" pattern[%d]=%d\n"), i, pattern[i]);
 	}
 	uint8_t c = 0;
 	uint8_t r = 0;

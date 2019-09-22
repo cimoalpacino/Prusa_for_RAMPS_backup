@@ -1682,7 +1682,6 @@ static void lcd_preheat_bed()
 	setWatch(); // heater sanity check timer
 }
 /*RAMPS*/
-
 static void lcd_preheat_farm()
 {
   setTargetHotend0(FARM_PREHEAT_HOTEND_TEMP);
@@ -2060,7 +2059,7 @@ static void lcd_preheat_menu()
 	  /*RAMPS*/
 	  MENU_ITEM_FUNCTION_P(PSTR("Hotend - " STRINGIFY(PREHEAT_HOTEND_TEMP) "/0"), lcd_preheat_nozzle);
 	  MENU_ITEM_FUNCTION_P(PSTR("Bed    - " "0/" STRINGIFY(PREHEAT_HPB_TEMP)), lcd_preheat_bed);
-	  /*RAMPS*/  
+	  /*RAMPS*/
 	  MENU_ITEM_FUNCTION_P(PSTR("PET  -  " STRINGIFY(PET_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(PET_PREHEAT_HPB_TEMP)), lcd_preheat_pet);
 	  MENU_ITEM_FUNCTION_P(PSTR("ASA  -  " STRINGIFY(ASA_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(ASA_PREHEAT_HPB_TEMP)), lcd_preheat_asa);
 	  MENU_ITEM_FUNCTION_P(PSTR("ABS  -  " STRINGIFY(ABS_PREHEAT_HOTEND_TEMP) "/" STRINGIFY(ABS_PREHEAT_HPB_TEMP)), lcd_preheat_abs);
@@ -2123,7 +2122,7 @@ static void lcd_support_menu()
       
   MENU_ITEM_BACK_P(_i("prusa3d.com"));////MSG_PRUSA3D
   MENU_ITEM_BACK_P(_i("forum.prusa3d.com"));////MSG_PRUSA3D_FORUM
-  // MENU_ITEM_BACK_P(_i("howto.prusa3d.com"));////MSG_PRUSA3D_HOWTO - obsolete link
+  //MENU_ITEM_BACK_P(_i("howto.prusa3d.com"));////MSG_PRUSA3D_HOWTO
   MENU_ITEM_BACK_P(STR_SEPARATOR);
   MENU_ITEM_BACK_P(PSTR(FILAMENT_SIZE));
   MENU_ITEM_BACK_P(PSTR(ELECTRONICS));
@@ -3190,7 +3189,7 @@ static void lcd_babystep_z()
 		eeprom_update_byte(&(EEPROM_Sheets_base->s[(eeprom_read_byte(
 		        &(EEPROM_Sheets_base->active_sheet)))].pinda_temp),
 		        current_temperature_pinda);
-		#endif	
+		#endif
 		calibration_status_store(CALIBRATION_STATUS_CALIBRATED);
 	}
 	if (LCD_CLICKED) menu_back();

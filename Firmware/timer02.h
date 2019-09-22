@@ -13,12 +13,12 @@ extern "C" {
 
 /*RAMPS*/
 #if (MOTHERBOARD == BOARD_RAMPS_14_EFB) && defined(SYSTEM_TIMER_2)
-///! Initializes TIMER4 for fast PWM mode-driven bed heating
+	///! Initializes TIMER4 for fast PWM mode-driven bed heating
 	extern void timer4_init(void);
 #elif (MOTHERBOARD == BOARD_RAMPS_14_EFB) && !defined(SYSTEM_TIMER_2)
-extern uint8_t timer02_pwm0;
-extern void timer02_set_pwm0(uint8_t pwm0);
-extern void timer02_init(void);
+	extern uint8_t timer02_pwm0;
+	extern void timer02_set_pwm0(uint8_t pwm0);
+	extern void timer02_init(void);
 #else
 	///! Initializes TIMER0 for fast PWM mode-driven bed heating
 	extern void timer0_init(void);
